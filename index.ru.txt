@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Домашки: кто молодец</title>
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f4f5fb;--card:#fff;--ink:#1f2140;--muted:#7a7d9c;--line:#e6e8f4;
+  --brand:#5b5cf0;--brand-soft:#ecebff;--ok:#19b36b;--ok-soft:#dcf6e9;--half:#ff9a1f;--half-soft:#fff0d9;--no:#f0476a;--no-soft:#ffe3e9;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14152a;--card:#1d1f3a;--ink:#eceeff;--muted:#9a9dc4;--line:#2c2f55;
+  --brand:#8b8cff;--brand-soft:#2a2c5c;--ok:#35d08a;--ok-soft:#173a30;--half:#ffae45;--half-soft:#3d2f17;--no:#ff6b8a;--no-soft:#41202e;}}
+:root[data-theme="dark"]{--bg:#14152a;--card:#1d1f3a;--ink:#eceeff;--muted:#9a9dc4;--line:#2c2f55;--brand:#8b8cff;--brand-soft:#2a2c5c;--ok:#35d08a;--ok-soft:#173a30;--half:#ffae45;--half-soft:#3d2f17;--no:#ff6b8a;--no-soft:#41202e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito','Segoe UI',system-ui,-apple-system,sans-serif;font-weight:500}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo i{width:44px;height:44px;border-radius:14px;background:var(--brand);color:#fff;display:grid;place-items:center;font-style:normal;font-size:24px;cursor:default;user-select:none}
+h1{font-size:24px;font-weight:900;margin:0;line-height:1.1}
+.sub{color:var(--muted);font-size:14px;margin-top:2px}
+input{font:inherit;color:var(--ink)}
+.subj{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:4px 10px;width:220px;margin-top:4px}
+.mode{display:flex;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px}
+.mode button{border:0;background:none;color:var(--muted);font:inherit;font-weight:700;padding:8px 16px;border-radius:999px;cursor:pointer}
+.mode button.on{background:var(--brand);color:#fff}
+button:focus-visible,input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border-radius:20px;padding:16px 18px;border:2px solid var(--line)}
+.stat b{display:block;font-size:28px;font-weight:900}
+.stat span{color:var(--muted);font-size:14px}
+.bar{height:10px;background:var(--line);border-radius:99px;margin-top:8px;overflow:hidden}
+.bar div{height:100%;background:var(--ok);border-radius:99px;transition:width .4s}
+.card{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:8px 0}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th,td{padding:10px 8px;text-align:center}
+th{font-size:13px;color:var(--muted);font-weight:700;border-bottom:2px solid var(--line)}
+th small{display:block;color:var(--ink);font-size:15px;font-weight:900}
+td.name,th.name{text-align:left;padding-left:18px}
+.who{display:flex;align-items:center;gap:10px;font-weight:700;white-space:nowrap}
+.ava{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900;font-size:14px;flex:none}
+.rank{width:22px;color:var(--muted);font-weight:900;text-align:center}
+.nm{background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:6px 10px;width:170px;font-weight:700}
+.rm{border:0;background:var(--no-soft);color:var(--no);border-radius:10px;font:inherit;font-weight:800;min-width:32px;height:32px;padding:0 8px;cursor:pointer}
+tr+tr td{border-top:1px solid var(--line)}
+.cell{width:44px;height:44px;border-radius:14px;border:2px dashed var(--line);background:none;font:inherit;font-weight:900;font-size:20px;cursor:default;color:var(--muted);transition:transform .15s}
+.cell.edit{cursor:pointer}.cell.edit:hover{transform:scale(1.08)}
+.cell.d{background:var(--ok-soft);border:2px solid var(--ok);color:var(--ok)}
+.cell.p{background:var(--half-soft);border:2px solid var(--half);color:var(--half);font-size:15px}
+.cell.n{background:var(--no-soft);border:2px solid var(--no);color:var(--no)}
+.cell.pop{animation:pop .35s}
+@keyframes pop{40%{transform:scale(1.25) rotate(-6deg)}}
+@media (prefers-reduced-motion:reduce){.cell.pop{animation:none}.bar div{transition:none}}
+.dtbox{display:flex;flex-direction:column;align-items:center;gap:4px}
+.dt{background:var(--bg);border:2px solid var(--line);border-radius:8px;padding:3px 4px;font-size:12px;width:128px}
+.place{font-weight:900;font-size:18px;width:56px;color:var(--muted)}
+.chk{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;font-weight:700}
+.pts{font-weight:900;font-size:18px}
+.lvl{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--brand-soft);color:var(--brand);margin-top:2px}
+.streak{font-weight:800;white-space:nowrap}
+.empty{padding:28px;color:var(--muted);text-align:center}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:14px;margin:14px 4px 0}
+.legend span b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;margin-right:6px;font-size:13px}
+.hint{margin:10px 4px 0;color:var(--muted);font-size:14px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin:14px 4px 0}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:12px;font:inherit;font-weight:800;padding:10px 16px;cursor:pointer}
+.btn.ghost{background:var(--card);color:var(--muted);border:2px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" id="logo"><i>🦊</i><div><h1>Домашки: кто молодец</h1><div class="sub" id="sub"></div></div></div>
+    <div class="mode" id="modeBox" role="group" aria-label="Режим">
+      <button id="mStudent" class="on">Ученик</button>
+      <button id="mTeacher">Преподаватель</button>
+    </div>
+  </header>
+  <div class="stats" id="stats"></div>
+  <div class="card"><div class="scroll"><table id="tbl"></table></div></div>
+  <div class="legend">
+    <span><b style="background:var(--ok-soft);color:var(--ok)">✓</b>сделано полностью: 10 очков</span>
+    <span><b style="background:var(--half-soft);color:var(--half)">½</b>сделано частично: 5 очков</span>
+    <span><b style="background:var(--no-soft);color:var(--no)">✕</b>не сделано: 0 очков</span>
+  </div>
+  <p class="hint" id="hint"></p>
+  <p class="hint" id="status"></p>
+  <div class="tools" id="tools">
+    <button class="btn" id="addBtn">+ Добавить ученика</button>
+    <button class="btn" id="addLesson">+ Добавить урок</button>
+    <label class="chk"><input type="checkbox" id="sortChk" checked=""> Сортировать по местам</label>
+    <button class="btn ghost" id="reset">Сбросить все отметки</button>
+  </div>
+  <div class="tools"><button class="btn" id="dlBtn">Скачать страницу</button></div>
+</div>
+<script type="application/json" id="state">{"v":1794478775049,"subject":"Обществознание","students":[{"id":0,"name":"Ксения Дьяконова"},{"id":1,"name":"Николь Лим"},{"id":2,"name":"Аксинья Воронина"},{"id":3,"name":"Варя Каюкова"},{"id":4,"name":"Владислав Капитонов"},{"id":5,"name":"Дарья Высочина"},{"id":6,"name":"Даша Монова"},{"id":7,"name":"Дмитрий Маковеев"},{"id":8,"name":"Марк Любимов"},{"id":9,"name":"Олег Татаринов"},{"id":10,"name":"Салима Халитов"},{"id":11,"name":"София Усольцева"},{"id":12,"name":"Тимур Вахидов"},{"id":13,"name":"Эйлин Аронс"},{"id":14,"name":"Дамир Рублев"},{"id":15,"name":"Тамир Кантемиров"},{"id":16,"name":"Саша Белянина"},{"id":17,"name":"Ульяна Гончаров"}],"lessons":[{"id":0,"date":"2026-10-27"},{"id":1,"date":"2026-11-02"},{"id":2,"date":"2026-11-09"},{"id":3,"date":"2026-11-23"},{"id":4,"date":"2026-11-30"},{"id":5,"date":"2026-12-07"},{"id":6,"date":"2026-12-14"},{"id":7,"date":"2026-12-21"}],"marks":{"1-0":"d","3-0":"d","5-0":"d","4-0":"d","6-0":"d","7-0":"d","10-0":"d","13-0":"d","12-0":"d","0-0":"p","9-1":"p","7-1":"d","1-1":"d","3-1":"d","5-1":"d","12-1":"d","13-1":"d","10-1":"d","12-2":"d","7-2":"d","13-2":"d","3-2":"d","5-2":"d","10-2":"d","4-2":"d","0-2":"p","15-2":"p"}}</script>
+<script>
+const SRC="<!DOCTYPE html>\n"+document.documentElement.outerHTML;
+const COLORS=["#5b5cf0","#ff7a45","#19b36b","#e0509a","#2f9bd6","#9a62e8","#e8a317","#1ba7a0","#d9534f","#6b7bd6"];
+const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const defLessons=()=>{const o=[],d=new Date(2026,10,2);for(let i=0;i<8;i++){o.push({id:i,date:iso(d)});d.setDate(d.getDate()+7)}return o};
+const fmt=d=>d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'}).replace('.','');
+const LEVELS=[[0,"Новичок"],[20,"Исследователь"],[45,"Эксперт"],[70,"Легенда"]];
+const KEY="dz-tracker-v3";
+let sortOn=true;
+const NEXT={"":"d",d:"p",p:"n",n:""};
+const SYM={d:"✓",p:"½",n:"✕"};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $=id=>document.getElementById(id);
+const emb=(()=>{try{return JSON.parse($("state").textContent)}catch(e){return {}}})();
+let st={subject:emb.subject||"Обществознание",students:emb.students||[],lessons:emb.lessons||defLessons(),marks:emb.marks||{}},ver=emb.v||0,teacher=false,popKey=null,armed=null,armTimer=null;
+try{const l=JSON.parse(localStorage.getItem(KEY)||"null");if(l&&l.v>ver&&l.st){st=l.st;ver=l.v}}catch(e){}
+if(!st.lessons)st.lessons=defLessons();
+const L=()=>[...st.lessons].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.id-b.id);
+const save=()=>{ver=Date.now();try{localStorage.setItem(KEY,JSON.stringify({st,v:ver}))}catch(e){}};
+async function download(){
+  const json=JSON.stringify({v:ver||Date.now(),subject:st.subject,students:st.students,lessons:st.lessons,marks:st.marks}).replace(/</g,"\\u003c");
+  const html=SRC.replace(/(<script type="application\/json" id="state">)[\s\S]*?(<\/script>)/,(m,a,b)=>a+json+b);
+  let dls=null;
+  try{dls=window.claude&&window.claude.use?await window.claude.use("downloads"):null}catch(e){}
+  if(dls){
+    try{await dls.save({filename:"dz-tracker.html",data:html})}catch(e){return}
+  }else{
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([html],{type:"text/html"}));a.download="dz-tracker.html";
+    document.body.appendChild(a);a.click();a.remove();
+  }
+  $("status").textContent=teacher?"Файл скачан. Отправьте его детям, например, в Telegram.":"Файл скачан. Он открывается без интернета.";
+}
+const mk=(id,j)=>st.marks[id+"-"+j]||"";
+const pts=id=>st.lessons.reduce((a,l)=>a+({d:10,p:5}[mk(id,l.id)]||0),0);
+const streak=id=>{let c=0;const ls=L();for(let j=ls.length-1;j>=0;j--){const m=mk(id,ls[j].id);if(!m)continue;if(m==="d")c++;else break}return c};
+const level=p=>LEVELS.filter(l=>p>=l[0]).pop()[1];
+const initials=n=>(n.trim().split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase())||"?";
+function arm(k,fn){
+  if(armed===k){armed=null;clearTimeout(armTimer);fn();return}
+  armed=k;render();clearTimeout(armTimer);armTimer=setTimeout(()=>{armed=null;render()},3000);
+}
+function render(){
+  const S=st.students,LS=L();
+  const ranked=[...S].sort((a,b)=>pts(b.id)-pts(a.id));
+  const order=(teacher&&!sortOn)?S:ranked;
+  const placeOf=id=>{const q=pts(id);return S.filter(x=>pts(x.id)>q).length+1};
+  const ids=new Set(S.map(x=>String(x.id))),lids=new Set(st.lessons.map(x=>String(x.id)));
+  const filled=Object.keys(st.marks).filter(k=>st.marks[k]&&ids.has(k.split("-")[0])&&lids.has(k.split("-")[1])).map(k=>st.marks[k]);
+  const done=filled.filter(m=>m==="d").length+filled.filter(m=>m==="p").length*.5;
+  const pct=filled.length?Math.round(done/filled.length*100):0;
+  const best=S.length?Math.max(...S.map(x=>streak(x.id))):0;
+  const top=ranked[0];
+  $("sub").innerHTML=teacher?`<input class="subj" id="subj" maxlength="40" value="${esc(st.subject)}" aria-label="Предмет">`:esc(st.subject);
+  $("stats").innerHTML=
+   `<div class="stat"><b>${pct}%</b><span>домашек сделано всем классом</span><div class="bar"><div style="width:${pct}%"></div></div></div>
+    <div class="stat"><b>🔥 ${best}</b><span>рекорд серии полных домашек подряд</span></div>
+    <div class="stat"><b>🏆 ${top?esc(top.name.split(" ")[0]||"—"):"—"}</b><span>${top?"лидер рейтинга, "+pts(top.id)+" очков":"добавьте учеников"}</span></div>`;
+  let h=`<thead><tr><th>Место</th><th class="name">Ученик</th>${LS.map(l=>{const d=parse(l.date);return teacher?`<th><div class="dtbox"><input type="date" class="dt" data-lid="${l.id}" value="${l.date}" aria-label="Дата урока"><button class="rm" data-rl="${l.id}" aria-label="Удалить урок">${armed==="rl"+l.id?"Точно?":"×"}</button></div></th>`:`<th>${d.toLocaleDateString('ru-RU',{weekday:'short'})}<small>${fmt(d)}</small></th>`}).join("")}<th>Серия</th><th>Очки</th></tr></thead><tbody>`;
+  if(!S.length)h+=`<tr><td colspan="${LS.length+4}" class="empty">Пока нет учеников. Нажмите «Добавить ученика».</td></tr>`;
+  order.forEach(s=>{
+    const i=s.id,p=pts(i),pl=p>0?placeOf(i):0,medal=pl?(["🥇","🥈","🥉"][pl-1]||pl):"–";
+    const nameCell=teacher
+      ?`<input class="nm" data-id="${i}" value="${esc(s.name)}" maxlength="40" aria-label="Имя ученика"><button class="rm" data-rm="${i}" aria-label="Удалить ученика">${armed==="rm"+i?"Удалить?":"×"}</button>`
+      :`<div>${esc(s.name)}<br><span class="lvl">${level(p)}</span></div>`;
+    h+=`<tr><td class="place">${medal}</td><td class="name"><div class="who"><span class="ava" style="background:${COLORS[i%COLORS.length]}">${esc(initials(s.name))}</span>${nameCell}</div></td>`;
+    LS.forEach(l=>{const k=i+"-"+l.id,m=mk(i,l.id);
+      h+=`<td><button class="cell ${m} ${teacher?"edit":""} ${popKey===k?"pop":""}" data-k="${k}" ${teacher?"":"tabindex=-1"} aria-label="${esc(s.name)}, ${fmt(parse(l.date))}">${SYM[m]||""}</button></td>`});
+    const sk=streak(i);
+    h+=`<td class="streak">${sk?"🔥 "+sk:"–"}</td><td class="pts">${p}</td></tr>`;
+  });
+  $("tbl").innerHTML=h+"</tbody>";
+  $("hint").textContent=teacher?"Нажимайте на клетку: пусто, ✓, ½, ✕. Имена, предмет и даты уроков можно править прямо здесь. Когда закончите, нажмите «Скачать страницу с отметками» и отправьте файл детям.":"Это режим просмотра. Отмечает только преподаватель.";
+  $("tools").style.display=teacher?"":"none";
+  $("dlBtn").textContent=teacher?"Скачать страницу с отметками":"Скачать страницу";
+  $("reset").textContent=armed==="reset"?"Точно очистить все отметки?":"Сбросить все отметки";
+  popKey=null;
+}
+$("tbl").addEventListener("click",e=>{
+  if(!teacher)return;
+  const rm=e.target.closest(".rm[data-rm]");
+  if(rm){const id=+rm.dataset.rm;arm("rm"+id,()=>{
+    st.students=st.students.filter(x=>x.id!==id);
+    for(const k of Object.keys(st.marks))if(k.split("-")[0]===String(id))delete st.marks[k];
+    save();render()});return}
+  const rl=e.target.closest(".rm[data-rl]");
+  if(rl){const id=+rl.dataset.rl;arm("rl"+id,()=>{
+    st.lessons=st.lessons.filter(x=>x.id!==id);
+    for(const k of Object.keys(st.marks))if(k.split("-")[1]===String(id))delete st.marks[k];
+    save();render()});return}
+  const b=e.target.closest(".cell");if(!b)return;
+  const k=b.dataset.k,n=NEXT[st.marks[k]||""];
+  if(n)st.marks[k]=n;else delete st.marks[k];
+  popKey=k;save();render();
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.classList&&t.classList.contains("nm")){const s=st.students.find(x=>x.id===+t.dataset.id);if(s){s.name=t.value.trim()||"Без имени";save();render()}}
+  else if(t.classList&&t.classList.contains("dt")){const l=st.lessons.find(x=>x.id===+t.dataset.lid);if(l&&t.value){l.date=t.value;save();render()}}
+  else if(t.id==="subj"){st.subject=t.value.trim()||"Предмет";save();render()}
+});
+$("addBtn").onclick=()=>{
+  const id=Math.max(-1,...st.students.map(x=>x.id))+1;
+  st.students.push({id,name:"Новый ученик"});save();render();
+  const ins=document.querySelectorAll(".nm"),l=ins[ins.length-1];if(l){l.focus();l.select()}
+};
+$("sortChk").onchange=e=>{sortOn=e.target.checked;render()};
+$("addLesson").onclick=()=>{
+  const id=Math.max(-1,...st.lessons.map(x=>x.id))+1,ls=L(),d=ls.length?parse(ls[ls.length-1].date):new Date();
+  if(ls.length)d.setDate(d.getDate()+7);
+  st.lessons.push({id,date:iso(d)});save();render();
+};
+$("reset").onclick=()=>arm("reset",()=>{st.marks={};save();render()});
+$("dlBtn").onclick=download;
+function setMode(t){teacher=t;$("mTeacher").classList.toggle("on",t);$("mStudent").classList.toggle("on",!t);render()}
+$("mStudent").onclick=()=>setMode(false);$("mTeacher").onclick=()=>setMode(true);
+render();
+$("modeBox").style.display="none";
+let taps=0;
+$("logo").onclick=()=>{if(++taps>=5)$("modeBox").style.display=""};
+if(location.hash==="#teacher")$("modeBox").style.display="";
+</script></body></html>
